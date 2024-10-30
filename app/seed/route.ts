@@ -117,7 +117,7 @@ async function seedSong_Albums() {
   return insertedSong_Albums;
 }
 
-async function seedSong_Artists) {
+async function seedSong_Artists() {
   await client.sql`
     CREATE TABLE IF NOT EXISTS song_artists (
       song_id INT NOT NULL,
