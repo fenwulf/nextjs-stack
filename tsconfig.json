@@ -20,7 +20,8 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      //"@/app/*": ["app/*"] //Added to fix error with some imported fonts
     }
   },
   "include": [
