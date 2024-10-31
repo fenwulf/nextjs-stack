@@ -1,8 +1,8 @@
 import { generateYAxis } from '@/app/lib/utils';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
-import { Revenue } from '@/app/lib/definitions';
-import { fetchRevenue } from '@/app/lib/data';
+import { Album } from '@/app/lib/definitions';
+import { fetchRevenue } from '@/app/lib/data'; //REPLACE WITH fetchAlbumscountpermonth
 
 // This component is representational only.
 // For data visualization UI, check out:
@@ -15,15 +15,15 @@ import { fetchRevenue } from '@/app/lib/data';
 // }: {
 //   revenue: Revenue[];
 // }) {
-export default async function RevenueChart() {
-  const revenue = await fetchRevenue(); //fetch inside component
+export default async function ReleaseChart() {
+  const albums = await fetchRevenue(); //fetch inside component //replace with fetchALBUMS
 
   const chartHeight = 350;
   // NOTE: Uncomment this code in Chapter 7
 
-  const { yAxisLabels, topLabel } = generateYAxis(revenue);
+  const { yAxisLabels, topLabel } = generateYAxis(albums);
 
-  if (!revenue || revenue.length === 0) {
+  if (!albums || albums.length === 0) {
     return <p className="mt-4 text-gray-400">No data available.</p>;
   }
 
@@ -45,7 +45,7 @@ export default async function RevenueChart() {
             ))}
           </div>
 
-          {revenue.map((month) => (
+          {albums.map((month) => ( //REVISIT LATER. NEED TO MAKE FETCHALBUMSCOUNTPERMONTH
             <div key={month.month} className="flex flex-col items-center gap-2">
               <div
                 className="w-full rounded-md bg-blue-300"

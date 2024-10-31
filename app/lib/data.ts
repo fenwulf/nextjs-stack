@@ -1,21 +1,21 @@
 import { sql } from '@vercel/postgres';
 import {
-  CustomerField,
-  CustomersTableType,
-  InvoiceForm,
-  InvoicesTable,
-  LatestInvoiceRaw,
-  Revenue,
+  Song,
+  Album,
+  Artist,
+  Album_Artists,
+  Song_Albums,
+  Song_Artists,
 } from './definitions';
-import { formatCurrency } from './utils';
 
 export async function fetchRevenue() {
   try {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
 
-    console.log('Fetching revenue data...');
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    //USE WITH REVENUE TABLE TO HAVE ALBUMs/MONTH
+
+    console.log('Fetching song data...');
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
@@ -213,5 +213,24 @@ export async function fetchFilteredCustomers(query: string) {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch customer table.');
+  }
+}
+
+// My stuff
+
+export async function fetchArtistPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM artists
+    JOIN customers ON invoices.customer_id = customers.id
+    WHERE
+      artists.artist_name ILIKE ${`%${query}%`}
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of artists.');
   }
 }
