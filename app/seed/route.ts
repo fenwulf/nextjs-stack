@@ -14,7 +14,7 @@ async function seedSongs() {
   const insertedSongs = await Promise.all(
     songs.map(async (song) => {
       return client.sql`
-        INSERT INTO users (song_id, song_name)
+        INSERT INTO songs (song_id, song_name)
         VALUES (${song.song_id}, ${song.song_name})
         ON CONFLICT (song_id) DO NOTHING;
       `;
@@ -59,7 +59,7 @@ async function seedArtists() {
   const insertedArtists = await Promise.all(
     artists.map(
       (artist) => client.sql`
-        INSERT INTO customers (artist_id, artist_name, is_alive)
+        INSERT INTO artists (artist_id, artist_name, is_alive)
         VALUES (${artist.artist_id}, ${artist.artist_name}, ${artist.is_alive})
         ON CONFLICT (artist_id) DO NOTHING;
       `,
