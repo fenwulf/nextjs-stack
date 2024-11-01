@@ -249,7 +249,7 @@ export async function fetchFilteredArtists(
       SELECT
         artists.artist_id,
         artists.artist_name,
-        artists.is_alive,
+        artists.is_alive
       FROM artists
       WHERE
         artists.artist_name ILIKE ${`%${query}%`} OR
@@ -265,7 +265,7 @@ export async function fetchFilteredArtists(
   }
 }
 
-export async function fetchArtistById(id: string) {
+export async function fetchArtistById(artist_id: string) {
   try {
     const data = await sql<ArtistForm>`
       SELECT
@@ -273,7 +273,7 @@ export async function fetchArtistById(id: string) {
         artists.artist_name,
         artists.is_alive
       FROM artists
-      WHERE artists.artist_id = ${id};
+      WHERE artists.artist_id = ${artist_id};
     `;
 
     const artist = data.rows.map((artist) => ({
@@ -283,6 +283,6 @@ export async function fetchArtistById(id: string) {
     return artist[0];
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch invoice.');
+    throw new Error('Failed to fetch Artist.');
   }
 }
