@@ -41,7 +41,7 @@ export default function Form() {
 
         {/* Invoice Amount */}
         <div className="mb-4">
-          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
+          <label htmlFor="artist_name" className="mb-2 block text-sm font-medium">
             Update artist name
           </label>
           <div className="relative mt-2 rounded-md">

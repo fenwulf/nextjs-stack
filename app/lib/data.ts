@@ -273,7 +273,7 @@ export async function fetchArtistById(artist_id: string) {
         artists.artist_name,
         artists.is_alive
       FROM artists
-      WHERE artists.artist_id = ${artist_id};
+      WHERE artists.artist_id = ${Number(artist_id)};
     `;
 
     const artist = data.rows.map((artist) => ({
@@ -282,7 +282,7 @@ export async function fetchArtistById(artist_id: string) {
 
     return artist[0];
   } catch (error) {
-    console.error('Database Error fetchArtistById:', error);
+    console.error(`Database Error fetchArtistById with id ${artist_id}:`, error);
     throw new Error('Failed to fetch Artist.');
   }
 }

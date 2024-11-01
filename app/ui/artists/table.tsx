@@ -12,6 +12,8 @@ export default async function ArtistsTable({
 }) {
   const artists = await fetchFilteredArtists(query, currentPage);
 
+  // artists?.forEach((artist) => console.log(`In table (artist): ${String(artist.artist_id)}`));
+
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">

@@ -7,10 +7,10 @@
 //   await client.sql`
 //     CREATE TABLE IF NOT EXISTS songs (
 //       song_id SERIAL PRIMARY KEY,
+//       );
+//       `;
+      
 //       song_name VARCHAR(255) NOT NULL
-//     );
-//   `;
-
 //   const insertedSongs = await Promise.all(
 //     songs.map(async (song) => {
 //       return client.sql`
