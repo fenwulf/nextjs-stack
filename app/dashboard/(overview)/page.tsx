@@ -1,6 +1,6 @@
 // import CardWrapper, { Card } from '@/app/ui/dashboard/cards';
 // import ReleaseChart from '@/app/ui/dashboard/release-chart';
-import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
+// import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
 import { lusitana } from '@/app/ui/fonts';
 import { 
   //fetchRevenue, //commented for suspense
@@ -63,9 +63,9 @@ export default async function Page() {
           <ReleaseChart />
         </Suspense> */}
         {/* <LatestInvoices latestInvoices={latestInvoices} /> commented for suspense */}
-        <Suspense fallback={<LatestInvoicesSkeleton />}>
+        {/* <Suspense fallback={<LatestInvoicesSkeleton />}>
           <LatestInvoices />
-        </Suspense>
+        </Suspense> */}
       </div>
     </main>
   );
