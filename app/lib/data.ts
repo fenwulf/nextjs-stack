@@ -269,7 +269,7 @@ export async function fetchArtistById(artist_id: string) {
   try {
     const data = await sql<ArtistForm>`
       SELECT
-        artists.id,
+        artists.artist_id,
         artists.artist_name,
         artists.is_alive
       FROM artists
