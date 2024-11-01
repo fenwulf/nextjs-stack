@@ -32,7 +32,7 @@ export async function createArtist(formData: FormData) {
     `;
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Create Artist'
+      message: 'Database Error createArtist action: Failed to Create Artist'
     };
   }
 
@@ -55,7 +55,7 @@ export async function updateArtist(artist_id: string, formData: FormData) {
     `;
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Update Artist.'
+      message: 'Database Error updateArtist action: Failed to Update Artist.'
     };
   }
  
@@ -70,7 +70,7 @@ export async function deleteArtist(artist_id: string) {
     revalidatePath('/dashboard/artists');
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Delete Artist.'
+      message: 'Database Error deleteArtist action: Failed to Delete Artist.'
     };
   }
 }

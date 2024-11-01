@@ -232,7 +232,7 @@ export async function fetchArtistPages(query: string) {
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error('Database Error:', error);
+    console.error('Database Error fetchArtistPages:', error);
     throw new Error('Failed to fetch total number of artists.');
   }
 }
@@ -260,7 +260,7 @@ export async function fetchFilteredArtists(
 
     return artists.rows;
   } catch (error) {
-    console.error('Database Error:', error);
+    console.error('Database Error fetchFilteredArtists:', error);
     throw new Error('Failed to fetch artists.');
   }
 }
@@ -282,7 +282,7 @@ export async function fetchArtistById(artist_id: string) {
 
     return artist[0];
   } catch (error) {
-    console.error('Database Error:', error);
+    console.error('Database Error fetchArtistById:', error);
     throw new Error('Failed to fetch Artist.');
   }
 }
