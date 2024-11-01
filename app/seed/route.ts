@@ -124,7 +124,7 @@ async function seedSong_Artists() {
       artist_id INT NOT NULL,
       is_main_artist VARCHAR(255) NOT NULL,
       FOREIGN KEY (song_id) REFERENCES songs(song_id),
-      FOREIGN KEY (artist_id) REFERENCES albums(artist_id),
+      FOREIGN KEY (artist_id) REFERENCES artists(artist_id),
       PRIMARY KEY (song_id, artist_id)
     );
   `;
