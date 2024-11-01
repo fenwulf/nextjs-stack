@@ -49,7 +49,7 @@ async function seedAlbums() {
 
 async function seedArtists() {
   await client.sql`
-    CREATE TABLE IF NOT EXISTS customers (
+    CREATE TABLE IF NOT EXISTS artists (
       artist_id SERIAL PRIMARY KEY,
       artist_name VARCHAR(255) NOT NULL,
       is_alive VARCHAR(255) NOT NULL
