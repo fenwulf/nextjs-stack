@@ -8,6 +8,7 @@ import {
   Song_Artists,
   ArtistsTable,
   ArtistForm,
+  ArtistField,
 } from './definitions';
 
 export async function fetchRevenue() {
@@ -284,5 +285,45 @@ export async function fetchArtistById(artist_id: string) {
   } catch (error) {
     console.error(`Database Error fetchArtistById with id ${artist_id}:`, error);
     throw new Error('Failed to fetch Artist.');
+  }
+}
+
+export async function fetchSongPages(query: string) {
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM songs
+    LEFT JOIN song_albums ON songs.song_id = song_albums.song_id
+    LEFT JOIN albums ON song_albums.album_id = albums.album_id
+    LEFT JOIN song_artists ON songs.song_id = song_artists.song_id
+    LEFT JOIN artists ON song_artists.artist_id = artists.artist_id
+    WHERE
+      artists.artist_name ILIKE ${`%${query}%`} OR
+      songs.song_name ILIKE ${`%${query}%`} OR
+      albums.album_name ILIKE ${`%${query}%`}
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error fetchSongPages:', error);
+    throw new Error('Failed to fetch total number of songs.');
+  }
+}
+
+export async function fetchArtists() {
+  try {
+    const data = await sql<ArtistField>`
+      SELECT
+        artist_id,
+        artist_name
+      FROM artists
+      ORDER BY artist_name ASC
+    `;
+
+    const artists = data.rows;
+    return artists;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch all artists.');
   }
 }

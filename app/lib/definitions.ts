@@ -61,3 +61,8 @@ export type ArtistForm = {
   artist_name: string;
   is_alive: 'alive' | 'passed';
 };
+
+export type ArtistField = {
+  artist_id: number;
+  artist_name: string;
+};
