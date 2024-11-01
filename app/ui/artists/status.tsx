@@ -18,7 +18,7 @@ export function ArtistLifeStatus({ status }: { status: string }) {
           <XMarkIcon className="ml-1 w-4 text-gray-500" />
         </>
       ) : null}
-      {status === 'paid' ? (
+      {status === 'alive' ? (
         <>
           Alive
           <CheckIcon className="ml-1 w-4 text-white" />
