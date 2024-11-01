@@ -75,7 +75,7 @@ async function seedAlbum_Artists() {
       album_id INT NOT NULL,
       artist_id INT NOT NULL,
       FOREIGN KEY (album_id) REFERENCES albums(album_id),
-      FOREIGN KEY (artist_id) REFERENCES albums(artist_id),
+      FOREIGN KEY (artist_id) REFERENCES artists(artist_id),
       PRIMARY KEY (album_id, artist_id)
     );
   `;
@@ -132,7 +132,7 @@ async function seedSong_Artists() {
   const insertedSong_Artists = await Promise.all(
     song_artists.map(
       (song_artist) => client.sql`
-        INSERT INTO song_albums (song_id, artist_id, is_main_artist)
+        INSERT INTO song_artists (song_id, artist_id, is_main_artist)
         VALUES (${song_artist.song_id}, ${song_artist.artist_id}, ${song_artist.is_main_artist})
         ON CONFLICT (song_id, artist_id) DO NOTHING;
       `,
