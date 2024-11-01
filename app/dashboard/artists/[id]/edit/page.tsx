@@ -11,7 +11,7 @@ export default async function Page(props: { params: Promise<{ artist_id: string 
   ]);
 
   if (!artist) {
-    console.log('Failed in edit page');
+    console.log(`Failed in edit page:${artist}`);
     notFound();
   }
 
