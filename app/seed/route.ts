@@ -52,7 +52,7 @@ async function seedArtists() {
     CREATE TABLE IF NOT EXISTS customers (
       artist_id SERIAL PRIMARY KEY,
       artist_name VARCHAR(255) NOT NULL,
-      is_alive VARCHAR(255) NOT NULL;
+      is_alive VARCHAR(255) NOT NULL
     );
   `;
 
