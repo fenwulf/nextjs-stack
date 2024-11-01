@@ -46,32 +46,32 @@ const artists = [
   {
     artist_id: '1',
     artist_name: 'Playboi Carti',
-    is_alive: true,
+    is_alive: 'alive',
   },
   {
     artist_id: '2',
     artist_name: 'Future',
-    is_alive: true,
+    is_alive: 'alive',
   },
   {
     artist_id: '3',
     artist_name: 'Ken Carson',
-    is_alive: true,
+    is_alive: 'alive',
   },
   {
     artist_id: '4',
     artist_name: 'Lil Uzi Vert',
-    is_alive: true,
+    is_alive: 'alive',
   },
   {
     artist_id: '5',
     artist_name: 'Juice WRLD',
-    is_alive: false,
+    is_alive: 'passed',
   },
   {
     artist_id: '6',
     artist_name: 'Destroy Lonely',
-    is_alive: true
+    is_alive: 'alive'
   }
 ];
 
@@ -103,41 +103,33 @@ const song_albums = [
     song_id: '3',
     album_id: '4'
   },
-  {
-    song_id: '1',
-    album_id: null
-  },
-  {
-    song_id: '2',
-    album_id: null
-  },
 ];
 
 const song_artists = [
   {
     song_id: '1',
     artist_id: '4',
-    is_main_artist: true
+    is_main_artist: 'main'
   },
   {
     song_id: '2',
     artist_id: '1',
-    is_main_artist: true
+    is_main_artist: 'main'
   },
   {
     song_id: '3',
     artist_id: '3',
-    is_main_artist: true
+    is_main_artist: 'main'
   },
   {
     song_id: '4',
     artist_id: '2',
-    is_main_artist: true
+    is_main_artist: 'main'
   },
   {
     song_id: '3',
     artist_id: '6',
-    is_main_artist: false
+    is_main_artist: 'main'
   },
 ];
 

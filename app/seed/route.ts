@@ -52,7 +52,7 @@ async function seedArtists() {
     CREATE TABLE IF NOT EXISTS customers (
       artist_id SERIAL PRIMARY KEY,
       artist_name VARCHAR(255) NOT NULL,
-      is_alive BOOLEAN
+      is_alive VARCHAR(255) NOT NULL;
     );
   `;
 
@@ -97,7 +97,7 @@ async function seedSong_Albums() {
   await client.sql`
     CREATE TABLE IF NOT EXISTS song_albums (
       song_id INT NOT NULL,
-      album_id INT,
+      album_id INT NOT NULL,
       FOREIGN KEY (song_id) REFERENCES songs(song_id),
       FOREIGN KEY (album_id) REFERENCES albums(album_id),
       PRIMARY KEY (song_id, album_id)
@@ -122,7 +122,7 @@ async function seedSong_Artists() {
     CREATE TABLE IF NOT EXISTS song_artists (
       song_id INT NOT NULL,
       artist_id INT NOT NULL,
-      is_main_artist BOOLEAN,
+      is_main_artist VARCHAR(255) NOT NULL,
       FOREIGN KEY (song_id) REFERENCES songs(song_id),
       FOREIGN KEY (artist_id) REFERENCES albums(artist_id),
       PRIMARY KEY (song_id, artist_id)

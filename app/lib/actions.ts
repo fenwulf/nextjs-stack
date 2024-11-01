@@ -6,79 +6,71 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { error } from 'console';
 
-const FormSchema = z.object({
-  id: z.string(),
-  customerId: z.string(),
-  amount: z.coerce.number(), //coerce (change) from string to number, as form input for number is actually string
-  status: z.enum(['pending', 'paid']),
-  date: z.string(),
+const ArtistSchema = z.object({
+  artist_id: z.number(),
+  artist_name: z.string(),
+  is_alive: z.enum(['alive', 'passed']),
 });
 
 // Use Zod to update the expected types
-const CreateInvoice = FormSchema.omit({ id: true, date: true }); //modified zod schema to use to validate with
-const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+const CreateArtist = ArtistSchema.omit({ artist_id: true}); //modified zod schema to use to validate with
+const UpdateArtist = ArtistSchema.omit({ artist_id: true});
 
-export async function createInvoice(formData: FormData) {
+export async function createArtist(formData: FormData) {
   // const rawFormData = { // without zod validation
-  const { customerId, amount, status } = CreateInvoice.parse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
+  const { artist_name, is_alive } = CreateArtist.parse({
+    artist_name: formData.get('artist_name'),
+    is_alive: formData.get('is_alive'),
   });
   // Test it out:
   // console.log(rawFormData);
 
-  const amountInCents = amount * 100;
-  const date = new Date().toISOString().split('T')[0];
-
   try {
     await sql`
-      INSERT INTO invoices (customer_id, amount, status, date)
-      VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+      INSERT INTO artists (artist_name, is_alive)
+      VALUES (${artist_name}, ${is_alive})
     `;
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Create Invoice'
+      message: 'Database Error: Failed to Create Artist'
     };
   }
 
-  revalidatePath('/dashboard/invoices'); //clear cache/update invoices page
-  redirect('/dashboard/invoices');
+  revalidatePath('/dashboard/artists'); //clear cache/update artists page
+  redirect('/dashboard/artists');
 }
  
-export async function updateInvoice(id: string, formData: FormData) {
-  const { customerId, amount, status } = UpdateInvoice.parse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
+export async function updateArtist(artist_id: string, formData: FormData) {
+  const { artist_name, is_alive } = UpdateArtist.parse({
+    // customerId: formData.get('customerId'),
+    artist_name: formData.get('artist_name'),
+    is_alive: formData.get('is_alive'),
   });
  
-  const amountInCents = amount * 100;
- 
   try {
     await sql`
-      UPDATE invoices
-      SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-      WHERE id = ${id}
+      UPDATE artists
+      SET artist_name = ${artist_name}, is_alive = ${is_alive}
+      WHERE artist_id = ${artist_id}
     `;
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Update Invoice.'
+      message: 'Database Error: Failed to Update Artist.'
     };
   }
  
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
+  revalidatePath('/dashboard/artists');
+  redirect('/dashboard/artists');
 }
 
-export async function deleteInvoice(id: string) {
+export async function deleteArtist(artist_id: string) {
 
   try {
-    await sql`DELETE FROM invoices WHERE id = ${id}`;
-    revalidatePath('/dashboard/invoices');
+    await sql`DELETE FROM artists WHERE artist_id = ${artist_id}`;
+    revalidatePath('/dashboard/artists');
   } catch (error) {
     return {
-      message: 'Database Error: Failed to Delete Invoice.'
+      message: 'Database Error: Failed to Delete Artist.'
     };
   }
 }

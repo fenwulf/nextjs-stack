@@ -16,7 +16,7 @@ export type Album = {
 export type Artist = {
   artist_id: number;
   artist_name: string;
-  is_alive: boolean;
+  is_alive: 'alive' | 'passed';
 }
 
 export type Album_Artists = {
@@ -26,13 +26,13 @@ export type Album_Artists = {
 
 export type Song_Albums = {
   song_id: number;
-  album_id: number | null;
+  album_id: number;
 }
 
 export type Song_Artists = {
   song_id: number;
   artist_id: number;
-  is_main_artist: boolean;
+  is_main_artist: 'main' | 'feature';
 }
 
 export type SongsTable = {
@@ -53,5 +53,11 @@ export type AlbumsTable = {
 export type ArtistsTable = {
   artist_id: number;
   artist_name: string;
-  is_alive: boolean;
+  is_alive: 'alive' | 'passed';
 }
+
+export type ArtistForm = {
+  artist_id: number;
+  artist_name: string;
+  is_alive: 'alive' | 'passed';
+};

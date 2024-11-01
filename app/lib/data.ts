@@ -6,6 +6,8 @@ import {
   Album_Artists,
   Song_Albums,
   Song_Artists,
+  ArtistsTable,
+  ArtistForm,
 } from './definitions';
 
 export async function fetchRevenue() {
@@ -83,7 +85,7 @@ export async function fetchCardData() {
   }
 }
 
-const ITEMS_PER_PAGE = 6;
+// const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number,
@@ -120,24 +122,24 @@ export async function fetchFilteredInvoices(
 }
 
 export async function fetchInvoicesPages(query: string) {
-  try {
-    const count = await sql`SELECT COUNT(*)
-    FROM invoices
-    JOIN customers ON invoices.customer_id = customers.id
-    WHERE
-      customers.name ILIKE ${`%${query}%`} OR
-      customers.email ILIKE ${`%${query}%`} OR
-      invoices.amount::text ILIKE ${`%${query}%`} OR
-      invoices.date::text ILIKE ${`%${query}%`} OR
-      invoices.status ILIKE ${`%${query}%`}
-  `;
+  // try {
+  //   const count = await sql`SELECT COUNT(*)
+  //   FROM invoices
+  //   JOIN customers ON invoices.customer_id = customers.id
+  //   WHERE
+  //     customers.name ILIKE ${`%${query}%`} OR
+  //     customers.email ILIKE ${`%${query}%`} OR
+  //     invoices.amount::text ILIKE ${`%${query}%`} OR
+  //     invoices.date::text ILIKE ${`%${query}%`} OR
+  //     invoices.status ILIKE ${`%${query}%`}
+  // `;
 
-    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
-    return totalPages;
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of invoices.');
-  }
+  //   const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+  //   return totalPages;
+  // } catch (error) {
+  //   console.error('Database Error:', error);
+  //   throw new Error('Failed to fetch total number of invoices.');
+  // }
 }
 
 export async function fetchInvoiceById(id: string) {
@@ -224,7 +226,8 @@ export async function fetchArtistPages(query: string) {
     FROM artists
     JOIN customers ON invoices.customer_id = customers.id
     WHERE
-      artists.artist_name ILIKE ${`%${query}%`}
+      artists.artist_name ILIKE ${`%${query}%`} OR
+      artists.is_alive ILIKE ${`%${query}%`}
   `;
 
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
@@ -232,5 +235,55 @@ export async function fetchArtistPages(query: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of artists.');
+  }
+}
+
+const ITEMS_PER_PAGE = 6;
+export async function fetchFilteredArtists(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const artists = await sql<ArtistsTable>`
+      SELECT
+        artists.artist_id,
+        artists.artist_name,
+        artists.is_alive,
+      FROM artists
+      WHERE
+        artists.artist_name ILIKE ${`%${query}%`} OR
+        artists.is_alive ILIKE ${`%${query}%`}
+      ORDER BY artists.artist_id DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+
+    return artists.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch artists.');
+  }
+}
+
+export async function fetchArtistById(id: string) {
+  try {
+    const data = await sql<ArtistForm>`
+      SELECT
+        artists.id,
+        artists.artist_name,
+        artists.is_alive
+      FROM artists
+      WHERE artists.artist_id = ${id};
+    `;
+
+    const artist = data.rows.map((artist) => ({
+      ...artist,
+    }));
+
+    return artist[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch invoice.');
   }
 }
