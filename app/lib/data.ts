@@ -224,7 +224,6 @@ export async function fetchArtistPages(query: string) {
   try {
     const count = await sql`SELECT COUNT(*)
     FROM artists
-    JOIN customers ON invoices.customer_id = customers.id
     WHERE
       artists.artist_name ILIKE ${`%${query}%`} OR
       artists.is_alive ILIKE ${`%${query}%`}
