@@ -1,6 +1,6 @@
 'use client';
 
-import { ArtistField, SongForm } from '@/app/lib/definitions';
+import { AlbumField, ArtistField, SongForm } from '@/app/lib/definitions';
 import {
   CheckIcon,
   ClockIcon,
@@ -16,12 +16,14 @@ import { updateSong } from '@/app/lib/actions'; // server action
 export default function EditSongForm({
   song,
   artists,
+  albums
 }: {
   song: SongForm;
   artists: ArtistField[];
+  albums: AlbumField[];
 }) {
   const updateSongWithId = updateSong.bind(null, String(song.song_id)); // bind artist id to pass it, bound as first parameter as formData is always last with server actions
-  console.log(`Artist name: ${song.artist_id}, ${song.artist_name}, ${song.song_name}`);
+
   return (
     <form action={updateSongWithId}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
@@ -43,6 +45,32 @@ export default function EditSongForm({
               {artists.map((artist) => (
                 <option key={artist.artist_id} value={artist.artist_id}>
                   {artist.artist_name}
+                </option>
+              ))}
+            </select>
+            <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
+        </div>
+
+        {/* Album Name */}
+        <div className="mb-4">
+          <label htmlFor="album" className="mb-2 block text-sm font-medium">
+            Choose album
+          </label>
+          <div className="relative">
+            <select
+              id="album"
+              name="album_id"
+              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue={song.album_id}
+            >
+              <option value="" disabled>
+                Select an album
+              </option>
+              <option value="">None</option>
+              {albums.map((album) => (
+                <option key={album.album_id} value={album.album_id}>
+                  {album.album_name}
                 </option>
               ))}
             </select>

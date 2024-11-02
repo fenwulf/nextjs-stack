@@ -78,6 +78,7 @@ export async function deleteArtist(artist_id: string) {
 const SongSchema = z.object({
   song_id: z.number(),
   artist_id: z.number(),
+  album_id: z.number(),
   song_name: z.string(),
 });
 
@@ -92,6 +93,12 @@ export async function createSong(formData: FormData) {
   });
   // Test it out:
   // console.log(rawFormData);
+
+  // await sql` //FOR ADDING NEW ALBUM LINK
+  //       INSERT INTO song_albums (song_id, album_id)
+  //       VALUES (${Number(song_id)}, ${album_id})
+  //       ON CONFLICT (song_id, album_id) DO NOTHING;
+  //     `
 
   try {
     await sql`
@@ -109,12 +116,13 @@ export async function createSong(formData: FormData) {
 }
  
 export async function updateSong(song_id: string, formData: FormData) {
-  const { artist_id, song_name } = UpdateSong.parse({
+  const { artist_id, album_id, song_name } = UpdateSong.parse({
     artist_id: Number(formData.get('artist_id')),
+    album_id: Number(formData.get('album_id')),
     song_name: formData.get('song_name'),
   });
  
-  try { //THINK THRU UPDATE LOGIC
+  try {
     await sql`
       UPDATE songs
       SET song_name = ${song_name}
@@ -125,6 +133,37 @@ export async function updateSong(song_id: string, formData: FormData) {
       SET artist_id = ${artist_id}
       WHERE song_id = ${Number(song_id)}
     `;
+
+    const data = await sql`
+      SELECT COUNT(*)
+      FROM song_albums
+      WHERE song_id = ${Number(song_id)}
+    `;
+
+    const count = Number(data.rows[0].count);
+
+    console.log(`Test for album_id and count return: ${album_id}, ${count}`);
+
+    if (count == 0 && album_id != 0) { // If there are no existing album links for a song, and the album_id has been changed to an existing album, then insert new entry
+      await sql`
+        INSERT INTO song_albums (song_id, album_id)
+        VALUES (${Number(song_id)}, ${album_id})
+        ON CONFLICT (song_id, album_id) DO NOTHING
+      `;
+    } else if (count == 1 && album_id != 0) { //already has an existing entry, just update to new album_id
+      await sql`
+        UPDATE song_albums
+        SET album_id = ${album_id}
+        WHERE song_id = ${Number(song_id)}
+      `;
+    } else if (count == 1 && album_id == 0) { //changed to None from an existing album, remove from table
+      await sql`
+        DELETE FROM song_albums
+        WHERE song_id = ${Number(song_id)}
+      `;
+    }
+
+    
   } catch (error) {
     return {
       message: 'Database Error updateSong action: Failed to Update Song.'

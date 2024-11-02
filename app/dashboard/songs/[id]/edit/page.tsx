@@ -1,6 +1,6 @@
 import Form from '@/app/ui/songs/edit-form';
 import Breadcrumbs from '@/app/ui/songs/breadcrumbs';
-import { fetchSongById, fetchArtists } from '@/app/lib/data';
+import { fetchSongById, fetchArtists, fetchAlbums } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 // id = artist_id, kept as id for routing directory simplicity
 export default async function Page(props: { params: Promise<{ id: string }> }) {
@@ -8,9 +8,10 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   // console.log(`Attempting to edit artist with id: ${params.id}`);
   // console.log(`Params: ${params}`);
   const id = params.id;
-  const [song, artists] = await Promise.all([
+  const [song, artists, albums] = await Promise.all([
     fetchSongById(id),
-    fetchArtists()
+    fetchArtists(),
+    fetchAlbums()
   ]);
 
   if (!song) {
@@ -30,7 +31,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
           },
         ]}
       />
-      <Form song={song} artists={artists} />
+      <Form song={song} artists={artists} albums={albums} />
     </main>
   );
 }

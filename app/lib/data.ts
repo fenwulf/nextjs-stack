@@ -11,6 +11,7 @@ import {
   ArtistField,
   SongsTable,
   SongForm,
+  AlbumField,
 } from './definitions';
 
 export async function fetchRevenue() {
@@ -376,7 +377,8 @@ export async function fetchSongById(song_id: string) {
       SELECT
         songs.song_id,
         songs.song_name,
-        artists.artist_id
+        artists.artist_id,
+        albums.album_id
       FROM songs
       LEFT JOIN song_albums ON songs.song_id = song_albums.song_id
       LEFT JOIN albums ON song_albums.album_id = albums.album_id
@@ -393,5 +395,23 @@ export async function fetchSongById(song_id: string) {
   } catch (error) {
     console.error(`Database Error fetchSongById with id ${song_id}:`, error);
     throw new Error('Failed to fetch Song.');
+  }
+}
+
+export async function fetchAlbums() {
+  try {
+    const data = await sql<AlbumField>`
+      SELECT
+        album_id,
+        album_name
+      FROM albums
+      ORDER BY album_name ASC;
+    `;
+
+    const albums = data.rows;
+    return albums;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch all albums.');
   }
 }

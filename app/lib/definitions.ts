@@ -70,7 +70,13 @@ export type ArtistField = {
 export type SongForm = {
   song_id: number;
   artist_id: number;
+  album_id: number;s
   song_name: string;
   artist_name: string;
+  album_name: string;
+};
+
+export type AlbumField = {
+  album_id: number;
   album_name: string;
 };
