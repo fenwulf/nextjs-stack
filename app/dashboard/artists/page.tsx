@@ -1,6 +1,6 @@
 import Pagination from '@/app/ui/artists/pagination';
 import Search from '@/app/ui/search';
-import Table from '@/app/ui/artists/table';
+import ArtistsTable from '@/app/ui/artists/table';
 import { CreateArtist } from '@/app/ui/artists/buttons';
 import { lusitana } from '@/app/ui/fonts';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
@@ -28,7 +28,7 @@ export default async function Page(props: {
         <CreateArtist />
       </div>
         <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
-          <Table query={query} currentPage={currentPage} />
+          <ArtistsTable query={query} currentPage={currentPage} />
         </Suspense>
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />

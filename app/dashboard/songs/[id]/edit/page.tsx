@@ -1,6 +1,6 @@
-import Form from '@/app/ui/artists/edit-form';
-import Breadcrumbs from '@/app/ui/artists/breadcrumbs';
-import { fetchArtistById } from '@/app/lib/data';
+import Form from '@/app/ui/songs/edit-form';
+import Breadcrumbs from '@/app/ui/songs/breadcrumbs';
+import { fetchSongById, fetchArtists } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 // id = artist_id, kept as id for routing directory simplicity
 export default async function Page(props: { params: Promise<{ id: string }> }) {
@@ -8,12 +8,13 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   // console.log(`Attempting to edit artist with id: ${params.id}`);
   // console.log(`Params: ${params}`);
   const id = params.id;
-  const [artist] = await Promise.all([
-    fetchArtistById(id),
+  const [song, artists] = await Promise.all([
+    fetchSongById(id),
+    fetchArtists()
   ]);
 
-  if (!artist) {
-    console.log(`Failed in edit page fetching by id:${artist}`);
+  if (!song) {
+    console.log(`Failed in edit page fetching by id:${song}`);
     notFound();
   }
 
@@ -21,15 +22,15 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
     <main>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Artists', href: '/dashboard/artists' },
+          { label: 'Songs', href: '/dashboard/songs' },
           {
-            label: 'Edit Artist',
-            href: `/dashboard/artists/${id}/edit`,
+            label: 'Edit Song',
+            href: `/dashboard/songs/${id}/edit`,
             active: true,
           },
         ]}
       />
-      <Form artist={artist} />
+      <Form song={song} artists={artists} />
     </main>
   );
 }

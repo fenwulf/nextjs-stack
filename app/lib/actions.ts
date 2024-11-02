@@ -74,3 +74,75 @@ export async function deleteArtist(artist_id: string) {
     };
   }
 }
+
+const SongSchema = z.object({
+  song_id: z.number(),
+  artist_id: z.number(),
+  song_name: z.string(),
+});
+
+// Use Zod to update the expected types
+const CreateSong = SongSchema.omit({ song_id: true}); //modified zod schema to use to validate with
+const UpdateSong = SongSchema.omit({ song_id: true});
+
+export async function createSong(formData: FormData) {
+  // const rawFormData = { // without zod validation
+  const { song_name } = CreateSong.parse({
+    song_name: formData.get('song_name'),
+  });
+  // Test it out:
+  // console.log(rawFormData);
+
+  try {
+    await sql`
+      INSERT INTO songs (song_name, is_alive)
+      VALUES (${song_name})
+    `;
+  } catch (error) {
+    return {
+      message: 'Database Error createSong action: Failed to Create Song'
+    };
+  }
+
+  revalidatePath('/dashboard/songs'); //clear cache/update songs page
+  redirect('/dashboard/songs');
+}
+ 
+export async function updateSong(song_id: string, formData: FormData) {
+  const { artist_id, song_name } = UpdateSong.parse({
+    artist_id: Number(formData.get('artist_id')),
+    song_name: formData.get('song_name'),
+  });
+ 
+  try { //THINK THRU UPDATE LOGIC
+    await sql`
+      UPDATE songs
+      SET song_name = ${song_name}
+      WHERE song_id = ${Number(song_id)}
+    `;
+    await sql`
+      UPDATE song_artists
+      SET artist_id = ${artist_id}
+      WHERE song_id = ${Number(song_id)}
+    `;
+  } catch (error) {
+    return {
+      message: 'Database Error updateSong action: Failed to Update Song.'
+    };
+  }
+ 
+  revalidatePath('/dashboard/songs');
+  redirect('/dashboard/songs');
+}
+
+export async function deleteSong(song_id: string) {
+
+  try {
+    await sql`DELETE FROM songs WHERE song_id = ${song_id}`;
+    revalidatePath('/dashboard/songs');
+  } catch (error) {
+    return {
+      message: 'Database Error deleteSong action: Failed to Delete Song.'
+    };
+  }
+}

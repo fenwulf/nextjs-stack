@@ -129,7 +129,7 @@ const song_artists = [
   {
     song_id: '3',
     artist_id: '6',
-    is_main_artist: 'main'
+    is_main_artist: 'feature'
   },
 ];
 
