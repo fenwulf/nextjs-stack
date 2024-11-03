@@ -81,3 +81,10 @@ export type AlbumField = {
   album_id: number;
   album_name: string;
 };
+
+export type AlbumForm = {
+  album_id: number;
+  artist_id: number;
+  album_name: string;
+  release_date: Date;
+};

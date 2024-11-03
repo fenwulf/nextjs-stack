@@ -234,6 +234,7 @@ const AlbumSchema = z.object({
   album_id: z.number(),
   artist_id: z.number(),
   album_name: z.string(),
+  release_date: z.string()
 });
 
 // Use Zod to update the expected types
@@ -291,95 +292,54 @@ export async function createAlbum(formData: FormData) {
   redirect('/dashboard/songs');
 }
  
-export async function updateAlbum(song_id: string, formData: FormData) {
-  const { artist_id, album_id, song_name } = UpdateSong.parse({
+export async function updateAlbum(album_id: string, formData: FormData) {
+  const { artist_id, album_name, release_date } = UpdateAlbum.parse({
     artist_id: Number(formData.get('artist_id')),
-    album_id: Number(formData.get('album_id')),
-    song_name: formData.get('song_name'),
+    album_name: formData.get('album_name'),
+    release_date: formData.get('release_date')
   });
  
   try {
     await sql`
-      UPDATE songs
-      SET song_name = ${song_name}
-      WHERE song_id = ${Number(song_id)}
+      UPDATE albums
+      SET album_name = ${album_name}, release_date = ${release_date}
+      WHERE album_id = ${Number(album_id)}
     `;
+
     await sql`
-      UPDATE song_artists
+      UPDATE album_artists
       SET artist_id = ${artist_id}
-      WHERE song_id = ${Number(song_id)}
+      WHERE album_id = ${Number(album_id)}
     `;
-
-    const data = await sql`
-      SELECT COUNT(*)
-      FROM song_albums
-      WHERE song_id = ${Number(song_id)}
-    `;
-
-    const count = Number(data.rows[0].count);
-
-    // console.log(`Test for album_id and count return: ${album_id}, ${count}`);
-
-    if (count == 0 && album_id != 0) { // If there are no existing album links for a song, and the album_id has been changed to an existing album, then insert new entry
-      await sql`
-        INSERT INTO song_albums (song_id, album_id)
-        VALUES (${Number(song_id)}, ${album_id})
-        ON CONFLICT (song_id, album_id) DO NOTHING
-      `;
-    } else if (count == 1 && album_id != 0) { //already has an existing entry, just update to new album_id
-      await sql`
-        UPDATE song_albums
-        SET album_id = ${album_id}
-        WHERE song_id = ${Number(song_id)}
-      `;
-    } else if (count == 1 && album_id == 0) { //changed to None from an existing album, remove from table
-      await sql`
-        DELETE FROM song_albums
-        WHERE song_id = ${Number(song_id)}
-      `;
-    }
-
     
   } catch (error) {
     return {
-      message: 'Database Error updateSong action: Failed to Update Song.'
+      message: 'Database Error updateAlbum action: Failed to Update Album.'
     };
   }
  
-  revalidatePath('/dashboard/songs');
-  redirect('/dashboard/songs');
+  revalidatePath('/dashboard/albums');
+  redirect('/dashboard/albums');
 }
 
-export async function deleteAlbum(song_id: string) {
+export async function deleteAlbum(album_id: string) {
 
   try {
-    const data = await sql`
-      SELECT COUNT(*)
-      FROM song_albums
-      WHERE song_id = ${Number(song_id)}
+    await sql`
+      DELETE FROM song_albums
+      WHERE album_id = ${Number(album_id)}
     `;
-
-    const count = Number(data.rows[0].count);
-
-    if (count != 0) { // Has associated album, delete from song_albums table
-      await sql`
-        DELETE FROM song_albums
-        WHERE song_id = ${Number(song_id)}
-      `;
-    }
 
     await sql`
-      DELETE FROM song_artists
-      WHERE song_id = ${Number(song_id)}
+      DELETE FROM albums
+      WHERE album_id = ${Number(album_id)}
     `;
 
-    await sql`DELETE FROM songs WHERE song_id = ${Number(song_id)}`;
-
-    revalidatePath('/dashboard/songs');
+    revalidatePath('/dashboard/albums');
   } catch (error) {
-    console.error("Error in deleteSong:", error);
+    console.error("Error in deleteAlbum:", error);
     return {
-      message: 'Database Error deleteSong action: Failed to Delete Song.'
+      message: 'Database Error deleteAlbum action: Failed to Delete Album.'
     };
   }
 }

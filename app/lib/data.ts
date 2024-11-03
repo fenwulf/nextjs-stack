@@ -12,7 +12,8 @@ import {
   SongsTable,
   SongForm,
   AlbumField,
-  AlbumsTable
+  AlbumsTable,
+  AlbumForm
 } from './definitions';
 
 export async function fetchRevenue() {
@@ -466,5 +467,30 @@ export async function fetchAlbumPages(query: string) {
   } catch (error) {
     console.error('Database Error fetchAlbumPages:', error);
     throw new Error('Failed to fetch total number of albums.');
+  }
+}
+
+export async function fetchAlbumById(album_id: string) {
+  try {
+    const data = await sql<AlbumForm>`
+      SELECT
+        albums.album_id,
+        albums.album_name,
+        albums.release_date,
+        artists.artist_id
+      FROM albums
+      LEFT JOIN album_artists ON albums.album_id = album_artists.album_id
+      LEFT JOIN artists ON album_artists.artist_id = artists.artist_id
+      WHERE albums.album_id = ${Number(album_id)};
+    `;
+
+    const album = data.rows.map((album) => ({
+      ...album,
+    }));
+
+    return album[0];
+  } catch (error) {
+    console.error(`Database Error fetchAlbumById with id ${album_id}:`, error);
+    throw new Error('Failed to fetch Album.');
   }
 }
