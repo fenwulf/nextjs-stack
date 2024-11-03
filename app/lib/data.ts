@@ -176,14 +176,13 @@ export async function fetchFilteredArtists(
 // }
 
 // Stored procedure version
-export async function fetchArtistById(artist_id: string) {
+export async function fetchArtistById(artist_id: string): Promise<ArtistForm | null> {
   try {
-    const result = await sql`
+    const result = await sql<ArtistForm>`
       SELECT * FROM get_artist_by_id(${Number(artist_id)});
     `;
     
-    const artist = result.rows[0];
-    return artist;
+    return result.rows.length > 0 ? result.rows[0] : null;
   } catch (error) {
     console.error(`Database Error fetchArtistById with id ${artist_id}:`, error);
     throw new Error('Failed to fetch Artist.');
