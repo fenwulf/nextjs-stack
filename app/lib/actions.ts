@@ -31,6 +31,7 @@ export async function createArtist(formData: FormData) {
       VALUES (${artist_name}, ${is_alive})
     `;
   } catch (error) {
+    console.error("Error in createArtist:", error);
     return {
       message: 'Database Error createArtist action: Failed to Create Artist'
     };
@@ -54,6 +55,7 @@ export async function updateArtist(artist_id: string, formData: FormData) {
       WHERE artist_id = ${artist_id}
     `;
   } catch (error) {
+    console.error("Error in updateArtist:", error);
     return {
       message: 'Database Error updateArtist action: Failed to Update Artist.'
     };
@@ -66,6 +68,40 @@ export async function updateArtist(artist_id: string, formData: FormData) {
 export async function deleteArtist(artist_id: string) {
 
   try {
+    // Deletes all associated things with artist
+    const albumIdsResult = await sql`
+      SELECT album_id FROM album_artists WHERE artist_id = ${artist_id}
+    `;
+    const songIdsResult = await sql`
+      SELECT song_id FROM song_artists WHERE artist_id = ${artist_id}
+    `;
+
+    const album_ids = albumIdsResult.rows.map(row => row.album_id);
+    const song_ids = songIdsResult.rows.map(row => row.song_id);
+
+    await sql`
+      DELETE FROM song_artists WHERE artist_id = ${artist_id}
+    `;
+    await sql`
+      DELETE FROM album_artists WHERE artist_id = ${artist_id}
+    `;
+    if (song_ids.length > 0) {
+      await sql`
+        DELETE FROM song_albums WHERE song_id IN (${song_ids.join(', ')})
+      `;
+    }
+    
+    if (song_ids.length > 0) {
+      await sql`
+        DELETE FROM songs WHERE song_id IN (${song_ids.join(', ')})
+      `;
+    }
+    if (album_ids.length > 0) {
+      await sql`
+        DELETE FROM albums WHERE album_id IN (${album_ids.join(', ')})
+      `;
+    }
+
     await sql`DELETE FROM artists WHERE artist_id = ${artist_id}`;
     revalidatePath('/dashboard/artists');
   } catch (error) {
@@ -93,10 +129,6 @@ export async function createSong(formData: FormData) {
     album_id: Number(formData.get('album_id')),
     song_name: formData.get('song_name'),
   });
-  // Test it out:
-  console.log('Artist: ', artist_id);
-  console.log('Album: ', album_id);
-  console.log('Song: ', song_name);
 
   try {
     const data = await sql`
@@ -107,32 +139,25 @@ export async function createSong(formData: FormData) {
     console.log("Made to song artists 1");
     const song_id = data.rows[0].song_id;
     
-    console.log("Made to song artists 2");
     await sql`
     INSERT INTO song_artists (song_id, artist_id, is_main_artist)
     VALUES (${song_id}, ${artist_id}, 'main')
     ON CONFLICT (song_id, artist_id) DO NOTHING;
     `;
-
-    console.log("passed song_artists");
     
     if (album_id != 0) {
-      console.log("Made to song albums 1");
       await sql`
       INSERT INTO song_albums (song_id, album_id)
       VALUES (${song_id}, ${album_id})
       ON CONFLICT (song_id, album_id) DO NOTHING;
       `;
     }
-    
-    console.log("Passed song albums");
 
   } catch (error) {
     return {
       message: 'Database Error createSong action: Failed to Create Song'
     };
   }
-  console.log("made to end");
   revalidatePath('/dashboard/songs'); //clear cache/update songs page
   redirect('/dashboard/songs');
 }
@@ -243,53 +268,37 @@ const UpdateAlbum = AlbumSchema.omit({ album_id: true});
 
 export async function createAlbum(formData: FormData) {
   // const rawFormData = { // without zod validation
-  const { artist_id, album_id, song_name } = CreateSong.parse({
+  const { artist_id, album_name, release_date } = CreateAlbum.parse({
     artist_id: Number(formData.get('artist_id')),
-    album_id: Number(formData.get('album_id')),
-    song_name: formData.get('song_name'),
+    album_name: formData.get('album_name'),
+    release_date: formData.get('release_date'),
   });
-  // Test it out:
-  console.log('Artist: ', artist_id);
-  console.log('Album: ', album_id);
-  console.log('Song: ', song_name);
 
   try {
     const data = await sql`
-      INSERT INTO songs (song_name)
-      VALUES (${song_name})
-      RETURNING song_id;
-    `;
-    console.log("Made to song artists 1");
-    const song_id = data.rows[0].song_id;
-    
-    console.log("Made to song artists 2");
-    await sql`
-    INSERT INTO song_artists (song_id, artist_id, is_main_artist)
-    VALUES (${song_id}, ${artist_id}, 'main')
-    ON CONFLICT (song_id, artist_id) DO NOTHING;
+      INSERT INTO albums (album_name, release_date)
+      VALUES (${album_name}, ${release_date})
+      RETURNING album_id;
     `;
 
-    console.log("passed song_artists");
+    const album_id = data.rows[0].album_id;
+    console.log("Album ID: ", album_id);
     
-    if (album_id != 0) {
-      console.log("Made to song albums 1");
-      await sql`
-      INSERT INTO song_albums (song_id, album_id)
-      VALUES (${song_id}, ${album_id})
-      ON CONFLICT (song_id, album_id) DO NOTHING;
-      `;
-    }
-    
-    console.log("Passed song albums");
+    await sql`
+    INSERT INTO album_artists (album_id, artist_id)
+    VALUES (${album_id}, ${artist_id})
+    ON CONFLICT (album_id, artist_id) DO NOTHING;
+    `;
 
   } catch (error) {
+    console.error("Error in createAlbum:", error);
     return {
-      message: 'Database Error createSong action: Failed to Create Song'
+      message: 'Database Error createAlbum action: Failed to Create Album'
     };
   }
-  console.log("made to end");
-  revalidatePath('/dashboard/songs'); //clear cache/update songs page
-  redirect('/dashboard/songs');
+
+  revalidatePath('/dashboard/albums'); //clear cache/update songs page
+  redirect('/dashboard/albums');
 }
  
 export async function updateAlbum(album_id: string, formData: FormData) {
@@ -327,6 +336,11 @@ export async function deleteAlbum(album_id: string) {
   try {
     await sql`
       DELETE FROM song_albums
+      WHERE album_id = ${Number(album_id)}
+    `;
+
+    await sql`
+      DELETE FROM album_artists
       WHERE album_id = ${Number(album_id)}
     `;
 
