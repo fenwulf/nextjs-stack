@@ -4,7 +4,7 @@ import { fetchArtists } from '@/app/lib/data';
  
 export default async function Page() {
   const artists = await fetchArtists();
- 
+  console.log("Vercel test: ", JSON.stringify(artists));
   return (
     <main>
       <Breadcrumbs
