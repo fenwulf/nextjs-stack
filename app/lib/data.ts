@@ -93,20 +93,35 @@ export async function fetchCardData() {
 
 // My stuff
 
+// export async function fetchArtistPages(query: string) {
+//   try {
+//     const count = await sql`SELECT COUNT(*)
+//     FROM artists
+//     WHERE
+//       artists.artist_name ILIKE ${`%${query}%`} OR
+//       artists.is_alive ILIKE ${`%${query}%`}
+//   `;
+
+//     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+//     return totalPages;
+//   } catch (error) {
+//     console.error('Database Error fetchArtistPages:', error);
+//     throw new Error('Failed to fetch total number of artists.');
+//   }
+// }
+
+// Stored Procedure version
 export async function fetchArtistPages(query: string) {
   try {
-    const count = await sql`SELECT COUNT(*)
-    FROM artists
-    WHERE
-      artists.artist_name ILIKE ${`%${query}%`} OR
-      artists.is_alive ILIKE ${`%${query}%`}
-  `;
-
-    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    const result = await sql`
+      SELECT get_artist_pages(${query}, ${ITEMS_PER_PAGE}) AS total_pages;
+    `;
+    
+    const totalPages = result.rows[0].total_pages;
     return totalPages;
   } catch (error) {
     console.error('Database Error fetchArtistPages:', error);
-    throw new Error('Failed to fetch total number of artists.');
+    throw new Error('Failed to fetch total number of artist pages.');
   }
 }
 
@@ -138,48 +153,78 @@ export async function fetchFilteredArtists(
   }
 }
 
+// export async function fetchArtistById(artist_id: string) {
+//   try {
+//     const data = await sql<ArtistForm>`
+//       SELECT
+//         artists.artist_id,
+//         artists.artist_name,
+//         artists.is_alive
+//       FROM artists
+//       WHERE artists.artist_id = ${Number(artist_id)};
+//     `;
+
+//     const artist = data.rows.map((artist) => ({
+//       ...artist,
+//     }));
+
+//     return artist[0];
+//   } catch (error) {
+//     console.error(`Database Error fetchArtistById with id ${artist_id}:`, error);
+//     throw new Error('Failed to fetch Artist.');
+//   }
+// }
+
+// Stored procedure version
 export async function fetchArtistById(artist_id: string) {
   try {
-    const data = await sql<ArtistForm>`
-      SELECT
-        artists.artist_id,
-        artists.artist_name,
-        artists.is_alive
-      FROM artists
-      WHERE artists.artist_id = ${Number(artist_id)};
+    const result = await sql`
+      SELECT * FROM get_artist_by_id(${Number(artist_id)});
     `;
-
-    const artist = data.rows.map((artist) => ({
-      ...artist,
-    }));
-
-    return artist[0];
+    
+    const artist = result.rows[0];
+    return artist;
   } catch (error) {
     console.error(`Database Error fetchArtistById with id ${artist_id}:`, error);
     throw new Error('Failed to fetch Artist.');
   }
 }
 
+// export async function fetchSongPages(query: string) {
+//   try {
+//     const count = await sql`SELECT COUNT(*)
+//     FROM songs
+//     LEFT JOIN song_albums ON songs.song_id = song_albums.song_id
+//     LEFT JOIN albums ON song_albums.album_id = albums.album_id
+//     LEFT JOIN song_artists ON songs.song_id = song_artists.song_id
+//     LEFT JOIN artists ON song_artists.artist_id = artists.artist_id
+//     WHERE
+//       (artists.artist_name ILIKE ${`%${query}%`} OR
+//       songs.song_name ILIKE ${`%${query}%`} OR
+//       albums.album_name ILIKE ${`%${query}%`}) AND
+//       is_main_artist ILIKE 'main';
+//   `;
+
+//     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+//     return totalPages;
+//   } catch (error) {
+//     console.error('Database Error fetchSongPages:', error);
+//     throw new Error('Failed to fetch total number of songs.');
+//   }
+// }
+
+// Stored procedure version
 export async function fetchSongPages(query: string) {
   try {
-    const count = await sql`SELECT COUNT(*)
-    FROM songs
-    LEFT JOIN song_albums ON songs.song_id = song_albums.song_id
-    LEFT JOIN albums ON song_albums.album_id = albums.album_id
-    LEFT JOIN song_artists ON songs.song_id = song_artists.song_id
-    LEFT JOIN artists ON song_artists.artist_id = artists.artist_id
-    WHERE
-      (artists.artist_name ILIKE ${`%${query}%`} OR
-      songs.song_name ILIKE ${`%${query}%`} OR
-      albums.album_name ILIKE ${`%${query}%`}) AND
-      is_main_artist ILIKE 'main';
-  `;
-
-    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    const result = await sql`
+      SELECT get_song_pages(${query}, ${ITEMS_PER_PAGE}) AS total_pages;
+    `;
+    
+    const totalPages = result.rows[0].total_pages;
     return totalPages;
   } catch (error) {
     console.error('Database Error fetchSongPages:', error);
-    throw new Error('Failed to fetch total number of songs.');
+    throw new Error('Failed to fetch total number of song pages.');
   }
 }
 
@@ -316,24 +361,39 @@ export async function fetchFilteredAlbums(
   }
 }
 
+// export async function fetchAlbumPages(query: string) {
+//   try {
+//     const count = await sql`
+//     SELECT COUNT(*)
+//     FROM albums
+//     LEFT JOIN album_artists ON albums.album_id = album_artists.album_id
+//     LEFT JOIN artists ON artists.artist_id = album_artists.artist_id
+//     WHERE
+//       albums.album_name ILIKE ${`%${query}%`} OR
+//       albums.release_date::text ILIKE ${`%${query}%`} OR
+//       artists.artist_name ILIKE ${`%${query}%`};
+//   `;
+
+//     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+//     return totalPages;
+//   } catch (error) {
+//     console.error('Database Error fetchAlbumPages:', error);
+//     throw new Error('Failed to fetch total number of albums.');
+//   }
+// }
+
+// Stored procedure version
 export async function fetchAlbumPages(query: string) {
   try {
-    const count = await sql`
-    SELECT COUNT(*)
-    FROM albums
-    LEFT JOIN album_artists ON albums.album_id = album_artists.album_id
-    LEFT JOIN artists ON artists.artist_id = album_artists.artist_id
-    WHERE
-      albums.album_name ILIKE ${`%${query}%`} OR
-      albums.release_date::text ILIKE ${`%${query}%`} OR
-      artists.artist_name ILIKE ${`%${query}%`};
-  `;
-
-    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    const result = await sql`
+      SELECT get_album_pages(${query}, ${ITEMS_PER_PAGE}) AS total_pages;
+    `;
+    
+    const totalPages = result.rows[0].total_pages;
     return totalPages;
   } catch (error) {
     console.error('Database Error fetchAlbumPages:', error);
-    throw new Error('Failed to fetch total number of albums.');
+    throw new Error('Failed to fetch total number of album pages.');
   }
 }
 
