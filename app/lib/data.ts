@@ -12,6 +12,7 @@ import {
   SongsTable,
   SongForm,
   AlbumField,
+  AlbumsTable
 } from './definitions';
 
 export async function fetchRevenue() {
@@ -413,5 +414,57 @@ export async function fetchAlbums() {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch all albums.');
+  }
+}
+
+export async function fetchFilteredAlbums(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const albums = await sql<AlbumsTable>`
+      SELECT
+        albums.album_id,
+        albums.album_name,
+        albums.release_date,
+        artists.artist_name
+      FROM albums
+      LEFT JOIN album_artists ON albums.album_id = album_artists.album_id
+      LEFT JOIN artists ON artists.artist_id = album_artists.artist_id
+      WHERE
+        albums.album_name ILIKE ${`%${query}%`} OR
+        albums.release_date::text ILIKE ${`%${query}%`} OR
+        artists.artist_name ILIKE ${`%${query}%`}
+      ORDER BY albums.album_id DESC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset};
+    `;
+
+    return albums.rows;
+  } catch (error) {
+    console.error('Database Error fetchFilteredAlbums:', error);
+    throw new Error('Failed to fetch albums.');
+  }
+}
+
+export async function fetchAlbumPages(query: string) {
+  try {
+    const count = await sql`
+    SELECT COUNT(*)
+    FROM albums
+    LEFT JOIN album_artists ON albums.album_id = album_artists.album_id
+    LEFT JOIN artists ON artists.artist_id = album_artists.artist_id
+    WHERE
+      albums.album_name ILIKE ${`%${query}%`} OR
+      albums.release_date::text ILIKE ${`%${query}%`} OR
+      artists.artist_name ILIKE ${`%${query}%`};
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error fetchAlbumPages:', error);
+    throw new Error('Failed to fetch total number of albums.');
   }
 }

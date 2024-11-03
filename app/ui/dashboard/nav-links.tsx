@@ -5,6 +5,9 @@ import {
   HomeIcon,
   DocumentDuplicateIcon,
   MusicalNoteIcon,
+  TagIcon,
+  FilmIcon,
+  PhotoIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -20,7 +23,8 @@ const links = [
     icon: DocumentDuplicateIcon,
   },
   { name: 'Songs', href: '/dashboard/songs', icon: MusicalNoteIcon},
-  { name: 'Artists', href: '/dashboard/artists', icon: UserGroupIcon}
+  { name: 'Artists', href: '/dashboard/artists', icon: UserGroupIcon},
+  { name: 'Albums', href: '/dashboard/albums', icon: FilmIcon}
 ];
 
 export default function NavLinks() {

@@ -48,6 +48,7 @@ export type AlbumsTable = {
   album_id: number;
   album_name: string;
   release_date: string;
+  artist_name: string;
 }
 
 export type ArtistsTable = {
