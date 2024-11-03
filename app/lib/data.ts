@@ -347,7 +347,7 @@ export async function fetchFilteredAlbums(
       LEFT JOIN artists ON artists.artist_id = album_artists.artist_id
       WHERE
         albums.album_name ILIKE ${`%${query}%`} OR
-        albums.release_date::text ILIKE ${`%${query}%`} OR
+        TO_CHAR(albums.release_date, 'MM/DD/YYYY') ILIKE ${`%${query}%`} OR
         artists.artist_name ILIKE ${`%${query}%`}
       ORDER BY albums.album_id DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset};
