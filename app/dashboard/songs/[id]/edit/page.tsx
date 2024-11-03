@@ -2,6 +2,9 @@ import Form from '@/app/ui/songs/edit-form';
 import Breadcrumbs from '@/app/ui/songs/breadcrumbs';
 import { fetchSongById, fetchArtists, fetchAlbums } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
+
 // id = artist_id, kept as id for routing directory simplicity
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
