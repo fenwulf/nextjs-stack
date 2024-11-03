@@ -1,23 +1,24 @@
-import Form from '@/app/ui/artists/create-form';
-import Breadcrumbs from '@/app/ui/artists/breadcrumbs';
-// import { fetchCustomers } from '@/app/lib/data';
+import Form from '@/app/ui/songs/create-form';
+import Breadcrumbs from '@/app/ui/songs/breadcrumbs';
+import { fetchArtists, fetchAlbums } from '@/app/lib/data';
  
 export default async function Page() {
-  // const customers = await fetchCustomers();
+  const artists = await fetchArtists();
+  const albums = await fetchAlbums();
  
   return (
     <main>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Artists', href: '/dashboard/artists' },
+          { label: 'Songs', href: '/dashboard/songs' },
           {
-            label: 'Create Artist',
-            href: '/dashboard/artists/create',
+            label: 'Create Song',
+            href: '/dashboard/songs/create',
             active: true,
           },
         ]}
       />
-      <Form />
+      <Form artists={artists} albums={albums}/>
     </main>
   );
 }
