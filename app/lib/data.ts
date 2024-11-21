@@ -257,7 +257,7 @@ export async function fetchFilteredSongs(
         songs.song_id,
         songs.song_name,
         artists.artist_name,
-        albums.album_name
+        COALESCE(albums.album_name, 'None') AS album_name
       FROM songs
       LEFT JOIN song_albums ON songs.song_id = song_albums.song_id
       LEFT JOIN albums ON song_albums.album_id = albums.album_id
@@ -272,11 +272,6 @@ export async function fetchFilteredSongs(
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset};
     `;
 
-    songs.rows.forEach((song, index) => {
-      if (song.album_name === null) {
-        song.album_name = 'None';
-      }
-    });
     return songs.rows;
   } catch (error) {
     console.error('Database Error fetchFilteredSongs:', error);
