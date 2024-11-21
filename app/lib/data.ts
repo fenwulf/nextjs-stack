@@ -266,7 +266,7 @@ export async function fetchFilteredSongs(
       WHERE
         (artists.artist_name ILIKE ${`%${query}%`} OR
         songs.song_name ILIKE ${`%${query}%`} OR
-        albums.album_name ILIKE ${`%${query}%`}) AND
+        COALESCE(albums.album_name, 'None') ILIKE ${`%${query}%`}) AND
         is_main_artist ILIKE 'main'
       ORDER BY songs.song_id DESC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset};
