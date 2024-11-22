@@ -1,6 +1,6 @@
-import CardWrapper, { Card } from '@/app/ui/dashboard/cards';
-import RevenueChart from '@/app/ui/dashboard/revenue-chart';
-import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
+// import CardWrapper, { Card } from '@/app/ui/dashboard/cards';
+// import ReleaseChart from '@/app/ui/dashboard/release-chart';
+// import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
 import { lusitana } from '@/app/ui/fonts';
 import { 
   //fetchRevenue, //commented for suspense
@@ -53,19 +53,20 @@ export default async function Page() {
           value={numberOfCustomers}
           type="customers"
         /> */}
-        <Suspense fallback={<CardsSkeleton />}>
+        {/* <Suspense fallback={<CardsSkeleton />}>
           <CardWrapper />
-        </Suspense>
+        </Suspense> */}
       </div>
       <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
         {/* <RevenueChart revenue={revenue}  /> commented for suspense*/}
-        <Suspense fallback={<RevenueChartSkeleton />}>
-          <RevenueChart />
-        </Suspense>
+        {/* <Suspense fallback={<RevenueChartSkeleton />}>
+          <ReleaseChart />
+        </Suspense> */}
         {/* <LatestInvoices latestInvoices={latestInvoices} /> commented for suspense */}
-        <Suspense fallback={<LatestInvoicesSkeleton />}>
+        {/* <Suspense fallback={<LatestInvoicesSkeleton />}>
           <LatestInvoices />
-        </Suspense>
+        </Suspense> */}
+        Hi
       </div>
     </main>
   );
